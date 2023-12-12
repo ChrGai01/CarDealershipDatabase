@@ -1,0 +1,84 @@
+CREATE DATABASE cardealership;
+CREATE TABLE cardealership.dealerships(
+dealershipID INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50) NOT NULL,
+address VARCHAR(50) NOT NULL,
+phone VARCHAR(12) NOT NULL
+);
+INSERT INTO cardealership.dealerships (name, address, phone)
+VALUES
+('ChrisGsMotors', '123 Main St', '214-123-123'),
+('AdamsAutos', '456 Oak St', '469-234-234');
+
+CREATE TABLE cardealership.vehicles(
+	vehiclesID INT AUTO_INCREMENT PRIMARY KEY,
+    year INT,
+    make VARCHAR(30) NOT NULL,
+    model VARCHAR(30)NOT NULL,
+    vehicleType VARCHAR(30)NOT NULL,
+    color VARCHAR(30)NOT NULL,
+    odometer INT NOT NULL,
+    price FLOAT (30)NOT NULL,
+    vin VARCHAR(30)NOT NULL,
+    SOLD BIT
+    );
+    INSERT INTO cardealership.vehicles (year, make, model, vehicleType, color, odometer, price, vin, SOLD)
+VALUES
+(1999, 'Chevrolet', 'Silverado', 'Truck', 'Grey', 250000, 8,000, 'VIN123456789', 0),
+(2099, 'Honda', 'Civic', 'Sedan', 'Red', 8000, 200000, 'VIN987654321', 1);
+
+CREATE TABLE cardealership.inventory(
+dealership_id VARCHAR(30)NOT NULL,
+vin VARCHAR(30)NOT NULL
+);
+INSERT INTO cardealership.inventory (dealership_id, vin)
+VALUES
+('D123', 'VIN123456789'),
+('D456', 'VIN987654321');
+
+CREATE TABLE cardealership.salescontracts(
+contractID INT AUTO_INCREMENT PRIMARY KEY,
+isFinanced BIT,
+dateOFContract VARCHAR(30)NOT NULL,
+customerName VARCHAR (30)NOT NULL,
+customerEmail VARCHAR(30)NOT NULL,
+vehicleSold VARCHAR(30)NOT NULL,
+vin VARCHAR(30)NOT NULL,
+FOREIGN KEY (vin) REFERENCES vehicles(vin)
+);
+INSERT INTO cardealership.salescontracts (isFinanced, dateOFContract, customerName, customerEmail, vehicleSold, vin)
+VALUES
+(1, '2022-01-15', 'Chris G''chrisg01@gmail.com', 'Chevrolet Silverado', 'VIN123456789'),
+(0, '2022-02-20', 'Jairo D', 'jairod@gmail.com', 'Honda Civic', 'VIN987654321');
+
+SELECT *
+FROM cardealership.dealerships;
+
+SELECT *
+FROM cardealership.vehicles v
+JOIN cardealership.inventory i ON v.vin = i.vin
+WHERE i.dealership_id = 'D123';
+
+SELECT *
+FROM cardealership.vehicles
+WHERE vin = 'VIN123456789';
+
+SELECT *
+FROM cardealership.dealerships d
+JOIN cardealership.inventory i ON d.dealershipID = i.dealership_id
+JOIN cardealership.vehicles v ON i.vin = v.vin
+WHERE v.vin = 'VIN123456789';
+
+SELECT *
+FROM cardealership.dealerships d
+JOIN cardealership.inventory i ON d.dealershipID = i.dealership_id
+JOIN cardealership.vehicles v ON i.vin = v.vin
+WHERE v.vehicleType = 'Chevrolet Silverado';
+
+SELECT *
+FROM cardealership.salescontracts sc
+JOIN cardealership.vehicles v ON sc.vin = v.vin
+JOIN cardealership.inventory i ON v.vin = i.vin
+JOIN cardealership.dealerships d ON i.dealership_id = d.dealershipID
+WHERE d.dealershipID = 'ChrisGsMotors'
+  AND sc.dateOFContract BETWEEN '10/23/2004' AND '12/10/2023';
